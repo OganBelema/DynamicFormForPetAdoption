@@ -13,8 +13,10 @@ import android.widget.LinearLayout;
 
 import com.oganbelema.dynamicformforpetadoption.model.Page;
 import com.oganbelema.dynamicformforpetadoption.model.PetAdoptionForm;
+import com.oganbelema.dynamicformforpetadoption.model.Section;
 import com.oganbelema.dynamicformforpetadoption.view.MyFormNameTextView;
 import com.oganbelema.dynamicformforpetadoption.view.MyPageLabelTextView;
+import com.oganbelema.dynamicformforpetadoption.view.MySectionLabelTextView;
 import com.oganbelema.dynamicformforpetadoption.view.adapter.MyViewPagerAdapter;
 import com.oganbelema.dynamicformforpetadoption.viewmodel.PetAdoptionFormViewModel;
 import com.oganbelema.dynamicformforpetadoption.viewmodel.PetAdoptionFormViewModelFactory;
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         //Check that form has pages
         if (petAdoptionForm.getPages() != null){
 
-            //creates viewPager and tablayout 
+            //creates viewPager and tablayout
             ViewPager viewPager = new ViewPager(this);
             TabLayout tabLayout = new TabLayout(this);
             List<View> views = new ArrayList<>();
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (Page page: petAdoptionForm.getPages()){
 
-                //So the user can scroll through the view, this will serve as the base view for'
+                //So the user can scroll through the view, this will serve as the base view for
                 //pages
                 NestedScrollView nestedScrollView = new NestedScrollView(this);
 
@@ -84,6 +86,24 @@ public class MainActivity extends AppCompatActivity {
                 pageView.setPadding(24, 24, 24, 24);
                 pageView.setOrientation(LinearLayout.VERTICAL);
 
+                //check that page has sections
+                if (page.getSections() != null){
+
+                    //create section views
+                    for (Section section: page.getSections()) {
+                        LinearLayout sectionView = new LinearLayout(this);
+                        sectionView.setOrientation(LinearLayout.VERTICAL);
+
+                        //create section label textview
+                        MySectionLabelTextView sectionLabelTextView =
+                                new MySectionLabelTextView(this);
+                        sectionLabelTextView.setText(section.getLabel());
+                        sectionView.addView(sectionLabelTextView);
+                        pageView.addView(sectionView);
+
+
+                    }
+                }
 
                 //create label text view for the page to show the page number
                 MyPageLabelTextView pageLabelTextView = new MyPageLabelTextView(this);
@@ -91,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 pageView.addView(pageLabelTextView);
 
 
+                //add the nested scroll view to the list of views to bel displayed by the viewpager
                 views.add(nestedScrollView);
                 mMyViewPagerAdapter.notifyDataSetChanged();
 
