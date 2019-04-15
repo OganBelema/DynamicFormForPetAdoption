@@ -3,4 +3,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="submit">Submit</string>
+
+    <string-array name="yesno">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
 </resources>

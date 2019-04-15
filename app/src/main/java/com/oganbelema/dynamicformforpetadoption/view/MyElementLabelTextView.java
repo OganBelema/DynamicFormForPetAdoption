@@ -1,11 +1,9 @@
 package com.oganbelema.dynamicformforpetadoption.view;
 
 import android.content.Context;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.widget.LinearLayout;
 
-import com.oganbelema.dynamicformforpetadoption.R;
 
 public class MyElementLabelTextView extends AppCompatTextView {
 
