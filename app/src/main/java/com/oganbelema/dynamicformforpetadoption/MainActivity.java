@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +26,7 @@ import com.oganbelema.dynamicformforpetadoption.model.Element;
 import com.oganbelema.dynamicformforpetadoption.model.Page;
 import com.oganbelema.dynamicformforpetadoption.model.PetAdoptionForm;
 import com.oganbelema.dynamicformforpetadoption.model.Section;
+import com.oganbelema.dynamicformforpetadoption.view.MyCustomButton;
 import com.oganbelema.dynamicformforpetadoption.view.MyEditText;
 import com.oganbelema.dynamicformforpetadoption.view.MyElementLabelTextView;
 import com.oganbelema.dynamicformforpetadoption.view.MyFormNameTextView;
@@ -208,6 +211,16 @@ public class MainActivity extends AppCompatActivity {
                                         break;
                                 }
                             }
+                        }
+
+                        //check if it is last page of form
+                        //if it is create a submit button and add to view
+                        if (petAdoptionForm.getPages().indexOf(page) == petAdoptionForm.getPages().size() - 1){
+                            MyCustomButton submitButton = new MyCustomButton(this);
+                            submitButton.setText(R.string.submit);
+
+                            //add button to the page view
+                            pageView.addView(submitButton);
                         }
 
 
