@@ -6,12 +6,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void generateView(PetAdoptionForm petAdoptionForm) {
+    private void generateView(final PetAdoptionForm petAdoptionForm) {
 
         //The parent view
-        LinearLayout baseView = new LinearLayout(this);
+        final LinearLayout baseView = new LinearLayout(this);
         baseView.setPadding(24, 24, 24, 24);
         baseView.setOrientation(LinearLayout.VERTICAL);
 
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         if (petAdoptionForm.getPages() != null) {
 
             //creates viewPager and tablayout
-            ViewPager viewPager = new ViewPager(this);
+            final ViewPager viewPager = new ViewPager(this);
             TabLayout tabLayout = new TabLayout(this);
             List<View> views = new ArrayList<>();
 
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //So the user can scroll through the view, this will serve as the base view for
                 //pages
-                NestedScrollView nestedScrollView = new NestedScrollView(this);
+                final NestedScrollView nestedScrollView = new NestedScrollView(this);
 
                 //creates view for the page
                 LinearLayout pageView = new LinearLayout(this);
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 if (page.getSections() != null) {
 
                     //create section views
-                    for (Section section : page.getSections()) {
+                    for (final Section section : page.getSections()) {
                         LinearLayout sectionView = new LinearLayout(this);
                         sectionView.setOrientation(LinearLayout.VERTICAL);
 
@@ -232,6 +235,13 @@ public class MainActivity extends AppCompatActivity {
                             MyCustomButton submitButton = new MyCustomButton(this);
                             submitButton.setText(R.string.submit);
 
+                            submitButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    validateForm(viewPager, petAdoptionForm);
+                                }
+                            });
+
                             //add button to the page view
                             pageView.addView(submitButton);
                         }
@@ -260,6 +270,96 @@ public class MainActivity extends AppCompatActivity {
 
         //populates the activity with generated view
         setContentView(baseView);
+    }
+
+    private void validateForm(ViewPager viewpager, PetAdoptionForm petAdoptionForm) {
+
+        //check that population form, viewpager and viewpager are not null
+        if (petAdoptionForm != null && viewpager != null && mMyViewPagerAdapter != null) {
+
+            //check that pages property of petAdoptionForm isn't null
+            if (petAdoptionForm.getPages() != null) {
+                //loop through the list of pages in the pet adoption form
+                for (int i = 0; i < petAdoptionForm.getPages().size(); i++) {
+                    //set the current page in the loop as the current view
+                    viewpager.setCurrentItem(i);
+
+                    //get the current page's view from the viewpager adapter
+                    View pageView = mMyViewPagerAdapter.getView(i);
+
+                    //check that the page view isn't null
+                    if (pageView != null) {
+                        //get the current page object from the form
+                        Page page = petAdoptionForm.getPages().get(i);
+
+                        //check that the sections property of the page isn't null
+                        if (page.getSections() != null) {
+
+                            //loop through the sections in the page
+                            for (Section section : page.getSections()) {
+
+                                //check that the element property of the current section isn't null
+                                if (section.getElements() != null) {
+
+                                    //loop through the elements in the current section
+                                    for (Element element : section.getElements()) {
+
+                                        //get the element's view from the pageView by it's tag
+                                        View elementView = pageView.findViewWithTag(element.getUniqueId());
+
+                                        //check that the isMandatory property of the element isn't null
+                                        if (element.getIsMandatory() != null) {
+
+                                            //check if the element is mandatory
+                                            if (element.getIsMandatory()) {
+
+                                                //since the element is mandatory, check for the element type
+                                                //so as to determine the view type and validate that the user
+                                                //provided input
+                                                switch (element.getType()) {
+                                                    //since these element types have the same view I grouped them together
+                                                    case "text":
+                                                    case "formattednumeric":
+                                                    case "datetime":
+                                                        try {
+                                                            String text = Objects.requireNonNull(((TextInputEditText)
+                                                                    elementView).getText()).toString();
+                                                            if (TextUtils.isEmpty(text)) {
+                                                                ((TextInputEditText) elementView).setError(getString(R.string.required_field));
+                                                                elementView.requestFocus();
+                                                                return;
+                                                            }
+                                                        } catch (Exception e) {
+                                                            Log.e(TAG, "Error in validating text input element: " +
+                                                                    e.getLocalizedMessage());
+                                                        }
+                                                        break;
+
+                                                    //check that the user selected a valid dropdown option
+                                                    case "yesno":
+                                                        try {
+                                                            String userSelection = (String)
+                                                                    ((Spinner) elementView).getSelectedItem();
+                                                            if (userSelection.equals(getString(R.string.select_option))){
+                                                                elementView.requestFocus();
+                                                                Toast.makeText(this, R.string.please_select_option, Toast.LENGTH_LONG).show();
+                                                                return;
+                                                            }
+                                                        } catch (Exception e){
+                                                            e.printStackTrace();
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private DatePickerDialog createDatePickerDialog(Context context, final EditText editText) {
@@ -300,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
 
                     for (Rule rule : rules) {
                         List<String> targets = rule.getTargets();
+
                         if (selectedOption != null) {
                             if (selectedOption.equals(rule.getValue())) {
                                 for (String target : targets) {
@@ -349,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 spinner.requestFocus();
-                Toast.makeText(MainActivity.this, "Please select an option",
+                Toast.makeText(MainActivity.this, R.string.please_select_option,
                         Toast.LENGTH_LONG).show();
             }
         });
