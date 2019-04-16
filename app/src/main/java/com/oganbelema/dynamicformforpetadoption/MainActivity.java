@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                                                 new MyTextInputEditText(this);
                                         //add unique id
                                         numericElementEditTextView.setTag(element.getUniqueId());
+                                        
                                         //set label
                                         numericElementEditTextView.setHint(element.getLabel());
                                         //format edit text
