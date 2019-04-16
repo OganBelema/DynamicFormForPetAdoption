@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputEditText;
@@ -12,10 +13,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -53,7 +59,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    private MyViewPagerAdapter mMyViewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
             List<View> views = new ArrayList<>();
 
             //adds the list of page views to the viewpager
-            mMyViewPagerAdapter = new MyViewPagerAdapter(views, this);
-            viewPager.setAdapter(mMyViewPagerAdapter);
+            final MyViewPagerAdapter myViewPagerAdapter = new MyViewPagerAdapter(views, this);
+            viewPager.setAdapter(myViewPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
 
             for (Page page : petAdoptionForm.getPages()) {
@@ -181,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
                                         numericElementEditTextView.setTag(element.getUniqueId());
                                         //set label
                                         numericElementEditTextView.setHint(element.getLabel());
-
-                                        numericElementEditTextView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                        //format edit text
+                                        formatEditText(numericElementEditTextView);
                                         numericElementLabelView.addView(numericElementEditTextView);
 
                                         break;
@@ -238,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                             submitButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    validateForm(viewPager, petAdoptionForm);
+                                    validateForm(myViewPagerAdapter, viewPager, petAdoptionForm);
                                 }
                             });
 
@@ -257,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //add the nested scroll view to the list of views to bel displayed by the viewpager
                 views.add(nestedScrollView);
-                mMyViewPagerAdapter.notifyDataSetChanged();
+                myViewPagerAdapter.notifyDataSetChanged();
 
                 //add the page view to the nested scollview
                 nestedScrollView.addView(pageView);
@@ -272,10 +277,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(baseView);
     }
 
-    private void validateForm(ViewPager viewpager, PetAdoptionForm petAdoptionForm) {
+    private void validateForm(MyViewPagerAdapter viewPagerAdapter, ViewPager viewpager, PetAdoptionForm petAdoptionForm) {
 
         //check that population form, viewpager and viewpager are not null
-        if (petAdoptionForm != null && viewpager != null && mMyViewPagerAdapter != null) {
+        if (petAdoptionForm != null && viewpager != null && viewPagerAdapter != null) {
 
             //check that pages property of petAdoptionForm isn't null
             if (petAdoptionForm.getPages() != null) {
@@ -285,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                     viewpager.setCurrentItem(i);
 
                     //get the current page's view from the viewpager adapter
-                    View pageView = mMyViewPagerAdapter.getView(i);
+                    View pageView = viewPagerAdapter.getView(i);
 
                     //check that the page view isn't null
                     if (pageView != null) {
@@ -457,5 +462,37 @@ public class MainActivity extends AppCompatActivity {
 
 
         return spinner;
+    }
+
+    private void formatEditText(final MyTextInputEditText editText){
+        editText.addTextChangedListener(new TextWatcher() {
+            boolean isEditing;
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(isEditing) return;
+                isEditing = true;
+                // removing old dashes
+                StringBuilder sb = new StringBuilder();
+                sb.append(s.toString().replace("-", ""));
+
+                if (sb.length()> 3)
+                    sb.insert(3, "-");
+                if (sb.length()> 8)
+                    sb.insert(8, "-");
+                if(sb.length()> 12)
+                    sb.delete(12, sb.length());
+
+                s.replace(0, s.length(), sb.toString());
+                isEditing = false;
+            }
+        });
     }
 }
