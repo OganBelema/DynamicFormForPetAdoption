@@ -22,6 +22,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,6 +38,7 @@ import com.oganbelema.dynamicformforpetadoption.model.Page;
 import com.oganbelema.dynamicformforpetadoption.model.PetAdoptionForm;
 import com.oganbelema.dynamicformforpetadoption.model.Rule;
 import com.oganbelema.dynamicformforpetadoption.model.Section;
+import com.oganbelema.dynamicformforpetadoption.view.DogAnimationViewForLoading;
 import com.oganbelema.dynamicformforpetadoption.view.MyCustomButton;
 import com.oganbelema.dynamicformforpetadoption.view.MyElementLabelTextView;
 import com.oganbelema.dynamicformforpetadoption.view.MyFormNameTextView;
@@ -59,10 +61,15 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+    private DogAnimationViewForLoading mDogAnimationViewForLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        mDogAnimationViewForLoading = new DogAnimationViewForLoading(LayoutInflater.from(this),
+                null);
 
         PetAdoptionFormViewModel petAdoptionFormViewModel = ViewModelProviders.of(this,
                 new PetAdoptionFormViewModelFactory(this))
@@ -78,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        setContentView(mDogAnimationViewForLoading.getRootView());
     }
 
     private void generateView(final PetAdoptionForm petAdoptionForm) {

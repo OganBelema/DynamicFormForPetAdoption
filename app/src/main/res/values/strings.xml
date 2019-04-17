@@ -6,6 +6,7 @@
     <string name="submit">Submit</string>
     <string name="required_field">Required field</string>
     <string name="please_select_option">Please select an option</string>
+    <string name="loading">Loading...</string>
 
     <string-array name="yesno">
         <item>Select an option</item>
