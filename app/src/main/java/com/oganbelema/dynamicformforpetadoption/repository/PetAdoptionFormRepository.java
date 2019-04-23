@@ -1,5 +1,6 @@
 package com.oganbelema.dynamicformforpetadoption.repository;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 
@@ -26,7 +27,7 @@ public class PetAdoptionFormRepository {
         return petAdoptionFormMutableLiveData;
     }
 
-    public MutableLiveData<PetAdoptionForm> getPetAdoptionFormMutableLiveData() {
+    public LiveData<PetAdoptionForm> getPetAdoptionFormMutableLiveData() {
         return mPetAdoptionFormMutableLiveData;
     }
 }

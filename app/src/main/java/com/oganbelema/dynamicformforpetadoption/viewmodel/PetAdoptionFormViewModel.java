@@ -1,6 +1,6 @@
 package com.oganbelema.dynamicformforpetadoption.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.oganbelema.dynamicformforpetadoption.model.PetAdoptionForm;
@@ -9,13 +9,13 @@ import com.oganbelema.dynamicformforpetadoption.repository.PetAdoptionFormReposi
 
 public class PetAdoptionFormViewModel extends ViewModel {
 
-    private final MutableLiveData<PetAdoptionForm> mPetAdoptionFormMutableLiveData;
+    private final LiveData<PetAdoptionForm> mPetAdoptionFormLiveData;
 
     public PetAdoptionFormViewModel(PetAdoptionFormRepository petAdoptionFormRepository) {
-        mPetAdoptionFormMutableLiveData = petAdoptionFormRepository.getPetAdoptionFormMutableLiveData();
+        mPetAdoptionFormLiveData = petAdoptionFormRepository.getPetAdoptionFormMutableLiveData();
     }
 
-    public MutableLiveData<PetAdoptionForm> getPetAdoptionFormMutableLiveData() {
-        return mPetAdoptionFormMutableLiveData;
+    public LiveData<PetAdoptionForm> getPetAdoptionFormLiveData() {
+        return mPetAdoptionFormLiveData;
     }
 }

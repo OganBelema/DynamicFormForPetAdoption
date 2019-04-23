@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputEditText;
@@ -13,15 +12,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -75,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 new PetAdoptionFormViewModelFactory(this))
                 .get(PetAdoptionFormViewModel.class);
 
-        petAdoptionFormViewModel.getPetAdoptionFormMutableLiveData().observe(this,
+        petAdoptionFormViewModel.getPetAdoptionFormLiveData().observe(this,
                 new Observer<PetAdoptionForm>() {
                     @Override
                     public void onChanged(@Nullable PetAdoptionForm petAdoptionForm) {
